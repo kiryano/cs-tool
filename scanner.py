@@ -50,7 +50,6 @@ class NetworkScanner:
                 print(f"Host {ip} does not have port 80 open.")
                 continue
 
-# Example usage
 if __name__ == "__main__":
     try:
         network = input("Enter an IP network to scan (e.g.): ")
