@@ -18,27 +18,45 @@ class NetworkScanner:
         Scans the network for active hosts.
     """
 
+    def __init__(self, network):
+        """
+        Constructs all the necessary attributes for the network scanner object.
 
-def __init__(self, network):
-    """
-    Constructs all the necessary attributes for the network scanner object.
+        Parameters
+        ----------
+            network : str
+                the IP network to scan
+        """
+        try:
+            self.network = ipaddress.ip_network(network)
+        except ValueError:
+            raise ValueError("Invalid network. Please provide a valid IP network.")
 
-    Parameters
-    ----------
-        network : str
-            the IP network to scan
-    """
-    self.network = network
+    def scan(self):
+        """
+        Scans the network for active hosts.
 
-    pass
+        Iterates over all possible IP addresses in the network and tries to establish a socket connection
+        to port 80. If the connection is successful, it prints out the IP address.
+        """
 
-def scan(self):
-    """
-    Scans the network for active hosts.
+        for ip in self.network.hosts():
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.settimeout(1)
+                    s.connect((str(ip), 80))
+                    print(f"Host {ip} has port 80 open.")
+            except (socket.timeout, ConnectionRefusedError, socket.error):
+                print(f"Host {ip} does not have port 80 open.")
+                continue
 
-    """
-    pass
-
+# Example usage
 if __name__ == "__main__":
-    print("Welcome to the Network Scanner!")
-    
+    try:
+        network = input("Enter an IP network to scan (e.g.): ")
+        print(f"Scanning network {network}...")
+        scanner = NetworkScanner(network)
+        scanner.scan()
+        print("Scan complete.")
+    except ValueError as e:
+        print(e)
